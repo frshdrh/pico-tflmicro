@@ -23,6 +23,8 @@ limitations under the License.
 
 #include "constants.h"
 
+#define PWM_PIN 2 
+
 namespace {
 
 int g_led_brightness = 0;
@@ -31,17 +33,17 @@ int g_led_brightness = 0;
 // https://github.com/raspberrypi/pico-examples/blob/master/pwm/led_fade
 extern "C" void on_pwm_wrap() {
   // Clear the interrupt flag that brought us here
-  pwm_clear_irq(pwm_gpio_to_slice_num(PICO_DEFAULT_LED_PIN));
+  pwm_clear_irq(pwm_gpio_to_slice_num(PWM_PIN));
   // Square the value to make the LED's brightness appear more linear
   // Note this range matches with the wrap value
-  pwm_set_gpio_level(PICO_DEFAULT_LED_PIN, g_led_brightness * g_led_brightness);
+  pwm_set_gpio_level(PWM_PIN, g_led_brightness * g_led_brightness);
 }
 
 void init_pwm_fade() {
   // Tell the LED pin that the PWM is in charge of its value.
-  gpio_set_function(PICO_DEFAULT_LED_PIN, GPIO_FUNC_PWM);
+  gpio_set_function(PWM_PIN, GPIO_FUNC_PWM);
   // Figure out which slice we just connected to the LED pin
-  uint slice_num = pwm_gpio_to_slice_num(PICO_DEFAULT_LED_PIN);
+  uint slice_num = pwm_gpio_to_slice_num(PWM_PIN);
 
   // Mask our slice's IRQ output into the PWM block's single interrupt line,
   // and register our interrupt handler
